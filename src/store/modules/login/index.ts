@@ -8,15 +8,15 @@ export const fetchUserData = createAsyncThunk(
 		const { data: userInfo } = await fetchUserInfoById(id)
 		const { data: role } = await fetchUserRoles(id)
 		dispatch(changeUserInfoAction(userInfo))
+		local.setLocal('role', role)
 		dispatch(changeRolesAction(role))
 		setCache('userInfo', userInfo)
-		local.setLocal('role', role)
 	}
 )
 
 const initialState = {
 	userInfo: getCache('userInfo') ?? {},
-	role: local.getLocal('role') ?? {},
+	role: local.getLocal('role') ?? [],
 }
 
 const login = createSlice({

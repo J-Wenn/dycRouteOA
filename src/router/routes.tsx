@@ -10,7 +10,7 @@ import {
 	RouteObject,
 	useLocation,
 	useNavigate,
-	useRoutes,
+	useRoutes
 } from 'react-router-dom'
 
 function mapFileToRoute(pathname: string): RouteObject | undefined {
@@ -30,10 +30,7 @@ function mapFileToRoute(pathname: string): RouteObject | undefined {
 	}
 }
 
-function useTokenAuth(role: any) {
-	const location = useLocation()
-	const navigate = useNavigate()
-
+function useDycAddRoute(role: any) {
 	useEffect(() => {
 		const urls: RouteObject[] = []
 		Object.keys(files).forEach((item) => {
@@ -43,22 +40,32 @@ function useTokenAuth(role: any) {
 		const dycRoute = filterRoute(role, urls)
 		dycRoute.unshift({
 			path: '',
-			element: <Navigate to={'analysis/dashboard'} />,
+			element: <Navigate to={'analysis/overview'} />,
 		})
 		route[route.findIndex((item) => item.path === 'main')].children = dycRoute
-	}, [])
+	}, [role])
+}
+
+function useTokenAuth() {
+	const location = useLocation()
+	const navigate = useNavigate()
 
 	useEffect(() => {
-		const token = getCache('user')?.token
-		if (token) {
-			if (location.pathname === 'login') {
-				navigate('login')
-			} else {
-				navigate(location.pathname)
-			}
-		} else {
-			navigate('login')
-		}
+		const token: string = getCache('user')?.token
+		// if (token) {
+		// 	if (location.pathname === 'login') {
+		// 		navigate('login')
+		// 	} else {
+		// 		navigate(location.pathname)
+		// 	}
+		// } else {
+		// 	navigate('login')
+		// }
+		!token
+			? navigate('login')
+			: location.pathname === 'login'
+			? navigate('login')
+			: navigate(location.pathname)
 	}, [navigate, location.pathname])
 }
 
@@ -74,7 +81,8 @@ const Router: FC = memo(() => {
 		shallowEqual
 	)
 
-	role && useTokenAuth(role)
+	role && useDycAddRoute(role)
+	useTokenAuth()
 
 	return <Suspense fallback={<Loading />}>{useRoutes(route)}</Suspense>
 })

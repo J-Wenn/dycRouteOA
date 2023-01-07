@@ -20,7 +20,7 @@ class Local {
 	}
 	getLocal(key: string) {
 		const value = window.localStorage.getItem(key)
-		if (value) return JSON.parse(value)
+		if (value && value !== 'undefined') return JSON.parse(value)
 	}
 	delLocal(key: string) {
 		window.localStorage.removeItem(key)
